@@ -18,6 +18,18 @@ fn main() {
 
 #[cfg(not(any(target_os = "android", target_os = "ios", feature = "cli")))]
 fn main() {
+    use flexi_logger::{FileSpec, Logger, WriteMode};
+    let file_spec = FileSpec::default()
+        .directory("/tmp/rustdesk/log")
+        .basename("rustdesk");
+
+    let _logger = Logger::try_with_env_or_str("trace")
+        .unwrap()
+        .log_to_file(file_spec)
+        .write_mode(WriteMode::Async)
+        .start()
+        .unwrap();
+
     if !common::global_init() {
         return;
     }

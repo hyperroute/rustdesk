@@ -53,7 +53,7 @@ lazy_static::lazy_static! {
         Some(key) => key,
         _ => "",
     }.to_owned()));
-    pub static ref APP_NAME: Arc<RwLock<String>> = Arc::new(RwLock::new("RustDesk".to_owned()));
+    pub static ref APP_NAME: Arc<RwLock<String>> = Arc::new(RwLock::new("NbuelaDesk".to_owned()));
     static ref KEY_PAIR: Arc<Mutex<Option<(Vec<u8>, Vec<u8>)>>> = Default::default();
     static ref HW_CODEC_CONFIG: Arc<RwLock<HwCodecConfig>> = Arc::new(RwLock::new(HwCodecConfig::load()));
 }
@@ -80,7 +80,9 @@ const CHARS: &'static [char] = &[
     'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
 
-const RENDEZVOUS_SERVERS: &'static [&'static str] = &[
+const RENDEZVOUS_SERVERS: &'static [&'static str] = &[];
+
+const RENDEZVOUS_SERVERS_OLD: &'static [&'static str] = &[
     "rs-ny.rustdesk.com",
     "rs-sg.rustdesk.com",
     "rs-cn.rustdesk.com",
@@ -544,10 +546,23 @@ impl Config {
         if !rendezvous_server.contains(":") {
             rendezvous_server = format!("{}:{}", rendezvous_server, RENDEZVOUS_PORT);
         }
+        if let Some(server) = crate::config_ext::UserConfig::get("server") {
+            let servers = server.split(",").collect::<Vec<&str>>();
+            if !servers.is_empty() && !servers.contains(&rendezvous_server.as_str()) {
+                rendezvous_server = servers[0].into();
+            }
+        }
         rendezvous_server
     }
 
     pub fn get_rendezvous_servers() -> Vec<String> {
+        if let Some(server) = crate::config_ext::UserConfig::get("server") {
+            return server
+                .split(",")
+                .map(|v| v.to_string())
+                .collect::<Vec<String>>();
+        }
+
         let s = Self::get_option("custom-rendezvous-server");
         if !s.is_empty() {
             return vec![s];
@@ -1077,6 +1092,9 @@ impl LocalConfig {
     }
 
     pub fn get_option(k: &str) -> String {
+        if let Some(value) = crate::config_ext::UserConfig::get(k) {
+            return value;
+        }
         if let Some(v) = LOCAL_CONFIG.read().unwrap().options.get(k) {
             v.clone()
         } else {

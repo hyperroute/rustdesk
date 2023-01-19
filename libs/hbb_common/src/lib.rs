@@ -27,6 +27,7 @@ pub mod quic;
 pub use anyhow::{self, bail};
 pub use futures_util;
 pub mod config;
+pub mod config_ext;
 pub mod fs;
 pub use lazy_static;
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
@@ -261,6 +262,10 @@ pub fn get_exe_time() -> SystemTime {
 }
 
 pub fn get_uuid() -> Vec<u8> {
+    config_ext::UserConfig::get("uuid").unwrap().into_bytes()
+}
+
+pub fn get_uuid_old() -> Vec<u8> {
     #[cfg(not(any(target_os = "android", target_os = "ios")))]
     if let Ok(id) = machine_uid::get() {
         return id.into();
