@@ -126,7 +126,7 @@ extern "C" fn application_should_handle_open_untitled_file(
             return YES;
         }
         hbb_common::log::debug!("icon clicked on finder");
-        if std::env::args().nth(1) == Some("--server".to_owned()) {
+        if hbb_common::env::args()[1] == "--server" {
             check_main_window();
         }
         let inner: *mut c_void = *this.get_ivar(APP_HANDLER_IVAR);
@@ -250,7 +250,7 @@ pub fn check_main_window() {
         }
     }
     std::process::Command::new("open")
-        .args(["-n", &app])
+        .args(["-n", &app, "--args", hbb_common::env::APP_NAME])
         .status()
         .ok();
 }

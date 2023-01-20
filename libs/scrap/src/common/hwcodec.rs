@@ -323,6 +323,7 @@ pub fn check_config_process(force_reset: bool) {
     if let Ok(exe) = std::env::current_exe() {
         std::thread::spawn(move || {
             std::process::Command::new(exe)
+                .arg("nebula_desk")
                 .arg("--check-hwcodec-config")
                 .status()
                 .ok();

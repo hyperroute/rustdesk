@@ -437,17 +437,24 @@ pub fn refresh_rendezvous_server() {
 }
 
 pub fn run_me<T: AsRef<std::ffi::OsStr>>(args: Vec<T>) -> std::io::Result<std::process::Child> {
+    use std::ffi::{OsStr, OsString};
+    let app_name = OsString::from(hbb_common::env::APP_NAME);
+    let mut tmp_args: Vec<&OsStr> = Vec::with_capacity(args.len());
+    tmp_args.push(app_name.as_ref());
+    tmp_args.extend_from_slice(&args.iter().map(|v| v.as_ref()).collect::<Vec<&OsStr>>());
     #[cfg(not(feature = "appimage"))]
     {
         let cmd = std::env::current_exe()?;
-        return std::process::Command::new(cmd).args(&args).spawn();
+        return std::process::Command::new(cmd).args(&tmp_args).spawn();
     }
     #[cfg(feature = "appimage")]
     {
         let appdir = std::env::var("APPDIR").unwrap();
         let appimage_cmd = std::path::Path::new(&appdir).join("AppRun");
         log::info!("path: {:?}", appimage_cmd);
-        return std::process::Command::new(appimage_cmd).args(&args).spawn();
+        return std::process::Command::new(appimage_cmd)
+            .args(&tmp_args)
+            .spawn();
     }
 }
 

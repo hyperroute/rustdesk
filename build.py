@@ -18,14 +18,16 @@ exe_path = 'target/release/' + hbb_name
 flutter_win_target_dir = 'flutter/build/windows/runner/Release/'
 skip_cargo = False
 
+
 def custom_os_system(cmd):
     err = os._system(cmd)
     if err != 0:
         print(f"Error occurred when executing: {cmd}. Exiting.")
         sys.exit(-1)
 # replace prebuilt os.system
-os._system = os.system
-os.system = custom_os_system
+# os._system = os.system
+# os.system = custom_os_system
+
 
 def get_version():
     with open("Cargo.toml", encoding="utf-8") as fh:
@@ -152,6 +154,7 @@ def download_extract_features(features, res_dir):
     import re
 
     proxy = ''
+
     def req(url):
         if not proxy:
             return url
@@ -162,10 +165,12 @@ def download_extract_features(features, res_dir):
             return r
 
     for (feat, feat_info) in features.items():
-        includes = feat_info['include'] if 'include' in feat_info and feat_info['include'] else []
-        includes = [ re.compile(p) for p in includes ]
-        excludes = feat_info['exclude'] if 'exclude' in feat_info and feat_info['exclude'] else []
-        excludes = [ re.compile(p) for p in excludes ]
+        includes = feat_info['include'] if 'include' in feat_info and feat_info['include'] else [
+        ]
+        includes = [re.compile(p) for p in includes]
+        excludes = feat_info['exclude'] if 'exclude' in feat_info and feat_info['exclude'] else [
+        ]
+        excludes = [re.compile(p) for p in excludes]
 
         print(f'{feat} download begin')
         download_filename = feat_info['zip_url'].split('/')[-1]
@@ -313,7 +318,8 @@ def build_flutter_deb(version, features):
 def build_flutter_dmg(version, features):
     if not skip_cargo:
         # set minimum osx build target, now is 10.14, which is the same as the flutter xcode project
-        os.system(f'MACOSX_DEPLOYMENT_TARGET=10.14 cargo build --features {features} --lib --release')
+        os.system(
+            f'MACOSX_DEPLOYMENT_TARGET=10.14 cargo build --features {features} --lib --release')
     # copy dylib
     os.system(
         "cp target/release/liblibrustdesk.dylib target/release/librustdesk.dylib")

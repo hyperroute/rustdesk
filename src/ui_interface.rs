@@ -125,7 +125,8 @@ pub fn run_without_install() {
 
 #[inline]
 pub fn show_run_without_install() -> bool {
-    let mut it = std::env::args();
+    let args = hbb_common::env::args();
+    let mut it = args.iter();
     if let Some(tmp) = it.next() {
         if crate::is_setup(&tmp) {
             return it.next() == None;

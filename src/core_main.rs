@@ -17,7 +17,7 @@ pub fn core_main() -> Option<Vec<String>> {
     let mut _is_quick_support = false;
     let mut _is_flutter_connect = false;
     let mut arg_exe = Default::default();
-    for arg in std::env::args() {
+    for arg in hbb_common::env::args() {
         // to-do: how to pass to flutter?
         if i == 0 {
             arg_exe = arg;
@@ -51,7 +51,7 @@ pub fn core_main() -> Option<Vec<String>> {
     }
     #[cfg(feature = "flutter")]
     if _is_flutter_connect {
-        return core_main_invoke_new_connection(std::env::args());
+        return core_main_invoke_new_connection(hbb_common::env::args());
     }
     let click_setup = cfg!(windows) && args.is_empty() && crate::common::is_setup(&arg_exe);
     #[cfg(not(feature = "flutter"))]

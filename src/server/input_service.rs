@@ -220,7 +220,7 @@ const MOUSE_ACTIVE_DISTANCE: i32 = 5;
 #[cfg(target_os = "macos")]
 lazy_static::lazy_static! {
     static ref QUEUE: Queue = Queue::main();
-    static ref IS_SERVER: bool =  std::env::args().nth(1) == Some("--server".to_owned());
+    static ref IS_SERVER: bool =  hbb_common::env::args()[1] ==  "--server";
 }
 
 #[cfg(target_os = "macos")]

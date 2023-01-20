@@ -687,7 +687,7 @@ pub mod client {
         let postfix = IPC_SUFFIX;
         #[cfg(feature = "flutter")]
         let quick_support = {
-            let args: Vec<_> = std::env::args().collect();
+            let args: Vec<_> = hbb_common::env::args().collect();
             args.contains(&"--quick_support".to_string())
         };
         #[cfg(not(feature = "flutter"))]

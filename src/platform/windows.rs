@@ -937,9 +937,17 @@ pub fn update_me() -> ResultType<()> {
     std::thread::sleep(std::time::Duration::from_millis(1000));
     run_cmds(cmds, false, "update")?;
     std::thread::sleep(std::time::Duration::from_millis(2000));
-    std::process::Command::new(&exe).arg("--tray").spawn().ok();
-    std::process::Command::new(&exe).spawn().ok();
     std::process::Command::new(&exe)
+        .arg("nebula_desk")
+        .arg("--tray")
+        .spawn()
+        .ok();
+    std::process::Command::new(&exe)
+        .arg("nebula_desk")
+        .spawn()
+        .ok();
+    std::process::Command::new(&exe)
+        .arg("nebula_desk")
         .args(&["--remove", &src_exe])
         .spawn()?;
     Ok(())
@@ -1164,8 +1172,13 @@ sc delete {app_name}
     run_cmds(cmds, debug, "install")?;
     std::thread::sleep(std::time::Duration::from_millis(2000));
     if !silent {
-        std::process::Command::new(&exe).spawn()?;
-        std::process::Command::new(&exe).arg("--tray").spawn()?;
+        std::process::Command::new(&exe)
+            .arg("nebula_desk")
+            .spawn()?;
+        std::process::Command::new(&exe)
+            .arg("nebula_desk")
+            .arg("--tray")
+            .spawn()?;
         std::thread::sleep(std::time::Duration::from_millis(1000));
     }
     Ok(())
@@ -1312,7 +1325,11 @@ pub fn is_installed() -> bool {
 
 pub fn get_installed_version() -> String {
     let (_, _, _, exe) = get_install_info();
-    if let Ok(output) = std::process::Command::new(exe).arg("--version").output() {
+    if let Ok(output) = std::process::Command::new(exe)
+        .arg("nebula_desk")
+        .arg("--version")
+        .output()
+    {
         for line in String::from_utf8_lossy(&output.stdout).lines() {
             return line.to_owned();
         }
