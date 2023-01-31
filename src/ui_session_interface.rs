@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use crate::client::io_loop::Remote;
 use crate::client::{
     check_if_retry, handle_hash, handle_login_error, handle_login_from_ui, handle_test_delay,

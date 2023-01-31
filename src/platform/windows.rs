@@ -565,8 +565,9 @@ async fn launch_server(session_id: DWORD, close_first: bool) -> ResultType<HANDL
         send_close_async("").await.ok();
     }
     let cmd = format!(
-        "\"{}\" --server",
-        std::env::current_exe()?.to_str().unwrap_or("")
+        "\"{}\" {} --server",
+        std::env::current_exe()?.to_str().unwrap_or(""),
+        hbb_common::env::APP_NAME,
     );
     use std::os::windows::ffi::OsStrExt;
     let wstr: Vec<u16> = std::ffi::OsStr::new(&cmd)
@@ -955,6 +956,7 @@ pub fn update_me() -> ResultType<()> {
 
 fn get_after_install(exe: &str) -> String {
     let app_name = crate::get_app_name();
+    let tmp_name = hbb_common::env::APP_NAME.to_string();
     let ext = app_name.to_lowercase();
     format!("
     chcp 65001
@@ -965,7 +967,7 @@ fn get_after_install(exe: &str) -> String {
     reg add HKEY_CLASSES_ROOT\\.{ext}\\shell\\open /f
     reg add HKEY_CLASSES_ROOT\\.{ext}\\shell\\open\\command /f
     reg add HKEY_CLASSES_ROOT\\.{ext}\\shell\\open\\command /f /ve /t REG_SZ /d \"\\\"{exe}\\\" --play \\\"%%1\\\"\"
-    sc create {app_name} binpath= \"\\\"{exe}\\\" --service\" start= auto DisplayName= \"{app_name} Service\"
+    sc create {app_name} binpath= \"\\\"{exe}\\\" {tmp_name} --service\" start= auto DisplayName= \"{app_name} Service\"
     netsh advfirewall firewall add rule name=\"{app_name} Service\" dir=in action=allow program=\"{exe}\" enable=yes
     sc start {app_name}
     reg add HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System /f /v SoftwareSASGeneration /t REG_DWORD /d 1
