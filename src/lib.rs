@@ -1,7 +1,7 @@
+mod keyboard;
 #[cfg(not(any(target_os = "ios")))]
 /// cbindgen:ignore
 pub mod platform;
-mod keyboard;
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
 pub use platform::{get_cursor, get_cursor_data, get_cursor_pos, start_os_service};
 #[cfg(not(any(target_os = "ios")))]
@@ -56,3 +56,14 @@ pub mod clipboard_file;
 
 #[cfg(all(windows, feature = "with_rc"))]
 pub mod rc;
+
+#[no_mangle]
+extern "C" fn nebula_desk() {
+    if !common::global_init() {
+        return;
+    }
+    if let Some(args) = crate::core_main::core_main().as_mut() {
+        ui::start(args);
+    }
+    common::global_clean();
+}

@@ -126,7 +126,7 @@ extern "C" fn application_should_handle_open_untitled_file(
             return YES;
         }
         hbb_common::log::debug!("icon clicked on finder");
-        if hbb_common::env::args()[1] == "--server" {
+        if hbb_common::env::args().contains(&"--server".to_string()) {
             check_main_window();
         }
         let inner: *mut c_void = *this.get_ivar(APP_HANDLER_IVAR);
